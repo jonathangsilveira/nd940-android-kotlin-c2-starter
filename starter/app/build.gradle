@@ -22,6 +22,15 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
     }
+    buildTypes.each {
+        Properties properties = new Properties()
+        properties.load(project.rootProject.file("nasa.properties").newDataInputStream())
+        def apiKey = properties.getProperty("api_key", "")
+
+        it.buildConfigField 'String', "API_KEY", apiKey
+
+        it.resValue 'string', "api_key", apiKey
+    }
     buildFeatures {
         dataBinding true
     }
