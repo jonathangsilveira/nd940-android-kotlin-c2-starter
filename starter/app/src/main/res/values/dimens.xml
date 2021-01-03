@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="list_item_padding">16dp</dimen>
+    <dimen name="default_view_margin">8dp</dimen>
+    <dimen name="image_title_padding">16dp</dimen>
+</resources>
