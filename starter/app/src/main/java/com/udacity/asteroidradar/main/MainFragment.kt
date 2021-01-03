@@ -3,26 +3,39 @@ package com.udacity.asteroidradar.main
 import android.os.Bundle
 import android.view.*
 import androidx.fragment.app.Fragment
-import androidx.lifecycle.ViewModelProvider
+import androidx.fragment.app.viewModels
+import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.R
 import com.udacity.asteroidradar.databinding.FragmentMainBinding
+import com.udacity.asteroidradar.di.ServiceLocator
 
 class MainFragment : Fragment() {
 
-    private val viewModel: MainViewModel by lazy {
-        ViewModelProvider(this).get(MainViewModel::class.java)
+    private val viewModel: MainViewModel by viewModels {
+        val activity = requireNotNull(this.activity) {
+            "You can only access the viewModel after onViewCreated()"
+        }
+        ServiceLocator.provideMainViewModel(activity.application)
     }
 
+    private val asteroidsAdapter = AsteroidsAdapter(AsteroidClick {  })
+
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                              savedInstanceState: Bundle?): View? {
+                              savedInstanceState: Bundle?): View {
         val binding = FragmentMainBinding.inflate(inflater)
         binding.lifecycleOwner = this
-
         binding.viewModel = viewModel
-
+        binding.asteroidRecycler.adapter = asteroidsAdapter
         setHasOptionsMenu(true)
-
         return binding.root
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        viewModel.asteroids.observe(
+            viewLifecycleOwner,
+            { asteroids -> asteroidsAdapter.submitList(asteroids) }
+        )
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {
@@ -33,4 +46,13 @@ class MainFragment : Fragment() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         return true
     }
+}
+
+class AsteroidClick(val block: (Asteroid) -> Unit) {
+    /**
+     * Called when an asteroid is clicked
+     *
+     * @param asteroid the asteroid that was clicked
+     */
+    fun onClick(asteroid: Asteroid) = block(asteroid)
 }
