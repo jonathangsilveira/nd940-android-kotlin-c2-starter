@@ -4,6 +4,8 @@ import android.view.View
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.databinding.BindingAdapter
+import com.squareup.picasso.Picasso
+import com.udacity.asteroidradar.data.remote.PictureOfDay
 
 @BindingAdapter("statusIcon")
 fun bindAsteroidStatusImage(imageView: ImageView, isHazardous: Boolean) {
@@ -47,4 +49,22 @@ fun bindTextViewToDisplayVelocity(textView: TextView, number: Double) {
 @BindingAdapter("isLoading")
 fun isLoading(view: View, isLoading: Boolean) {
     view.visibility = if (isLoading) View.VISIBLE else View.GONE
+}
+
+@BindingAdapter("pictureOfDay")
+fun bindPictureOfDay(imageView: ImageView, pictureOfDay: PictureOfDay?) {
+    if (pictureOfDay?.mediaType == "image")
+        Picasso.get()
+            .load(pictureOfDay.url)
+            .placeholder(R.drawable.loading_animation)
+            .error(R.drawable.ic_broken_image)
+            .into(imageView)
+    else
+        imageView.setImageResource(R.drawable.placeholder_picture_of_day)
+}
+
+@BindingAdapter("imageTitle")
+fun bindPictureOfDayTitle(textView: TextView, pictureOfDay: PictureOfDay?) {
+    val resources = textView.context.resources
+    textView.text = pictureOfDay?.title ?: resources.getText(R.string.image_of_the_day)
 }

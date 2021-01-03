@@ -2,12 +2,14 @@ package com.udacity.asteroidradar.data.repo
 
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.map
-import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.BuildConfig
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.data.local.AsteroidRadarDatabase
+import com.udacity.asteroidradar.data.remote.PictureOfDay
 import com.udacity.asteroidradar.data.remote.WebService
 import com.udacity.asteroidradar.data.remote.parseAsteroidsJsonResult
+import com.udacity.asteroidradar.data.remote.parsePictureOfDayJsonResult
+import com.udacity.asteroidradar.domain.Asteroid
 import com.udacity.asteroidradar.domain.asDatabaseModel
 import com.udacity.asteroidradar.domain.asDomainModel
 import org.json.JSONObject
@@ -55,6 +57,11 @@ class AsteroidRepositoryImpl(
 
     override val asteroids: LiveData<List<Asteroid>> = database.asteroidDao.getAsteroids().map {
         it.asDomainModel()
+    }
+
+    override suspend fun getPictureOfDay(): PictureOfDay {
+        val json = webService.getImageOfTheDay(apiKey = BuildConfig.API_KEY)
+        return parsePictureOfDayJsonResult(json)
     }
 
 }

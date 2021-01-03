@@ -1,18 +1,14 @@
 package com.udacity.asteroidradar.data.remote
 
-import com.squareup.moshi.Moshi
-import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
-import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.Constants
+import com.udacity.asteroidradar.domain.Asteroid
 import okhttp3.OkHttpClient
 import org.json.JSONObject
 import retrofit2.Retrofit
-import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.create
 import retrofit2.http.GET
 import retrofit2.http.Query
-import java.sql.Time
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -53,6 +49,14 @@ fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
     return asteroidList
 }
 
+fun parsePictureOfDayJsonResult(json: String): PictureOfDay {
+    val rootJson = JSONObject(json)
+    val mediaType = rootJson.getString("media_type")
+    val title = rootJson.getString("title")
+    val url = rootJson.getString("url")
+    return PictureOfDay(mediaType, title, url)
+}
+
 private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
     val formattedDateList = ArrayList<String>()
 
@@ -69,10 +73,6 @@ private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
 
 object Network {
 
-    private val moshi = Moshi.Builder()
-        .add(KotlinJsonAdapterFactory())
-        .build()
-
     private val client = OkHttpClient.Builder()
         .callTimeout(30, TimeUnit.SECONDS)
         .readTimeout(30, TimeUnit.SECONDS)
@@ -81,7 +81,6 @@ object Network {
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(Constants.BASE_URL)
-        .addConverterFactory(MoshiConverterFactory.create(moshi))
         .addConverterFactory(ScalarsConverterFactory.create())
         .client(client)
         .build()

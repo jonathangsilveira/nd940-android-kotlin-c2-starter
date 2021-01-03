@@ -1,9 +1,9 @@
 package com.udacity.asteroidradar.main
 
 import androidx.lifecycle.*
-import com.udacity.asteroidradar.Asteroid
-import com.udacity.asteroidradar.R
+import com.udacity.asteroidradar.data.remote.PictureOfDay
 import com.udacity.asteroidradar.data.repo.AsteroidsRepository
+import com.udacity.asteroidradar.domain.Asteroid
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -14,9 +14,9 @@ class MainViewModel(private val repo: AsteroidsRepository) : ViewModel() {
     val loading: LiveData<Boolean>
         get() = _loading
 
-    /*private val _error = MutableLiveData<Int?>()
-    val error: LiveData<Int?>
-        get() = _error*/
+    private val _pictureOfDay = MutableLiveData<PictureOfDay?>()
+    val pictureOfDay: LiveData<PictureOfDay?>
+        get() = _pictureOfDay
 
     val asteroids: LiveData<List<Asteroid>> = repo.asteroids
 
@@ -24,18 +24,29 @@ class MainViewModel(private val repo: AsteroidsRepository) : ViewModel() {
         refreshDataFromNetwork()
     }
 
-    /*fun onErrorClicked() {
-        _error.value = null
-    }*/
+    private fun refreshDataFromNetwork() {
+        refreshPictureOfDay()
+        refreshAsteroids()
+    }
 
-    private fun refreshDataFromNetwork() = viewModelScope.launch {
-        _loading.value = true
-        try {
-            withContext(context = Dispatchers.IO) {
-                repo.fetchAndSaveAsteroids()
+    private fun refreshAsteroids() {
+        viewModelScope.launch {
+            _loading.value = true
+            try {
+                val io = Dispatchers.IO
+                withContext(context = io) {
+                    repo.fetchAndSaveAsteroids()
+                }
+            } finally {
+                _loading.value = false
             }
-        } finally {
-            _loading.value = false
+        }
+    }
+    private fun refreshPictureOfDay() {
+        viewModelScope.launch {
+            _pictureOfDay.value = withContext(context = Dispatchers.IO) {
+                repo.getPictureOfDay()
+            }
         }
     }
 

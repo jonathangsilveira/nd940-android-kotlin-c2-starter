@@ -1,6 +1,5 @@
 package com.udacity.asteroidradar.domain
 
-import com.udacity.asteroidradar.Asteroid
 import com.udacity.asteroidradar.data.local.DatabaseAsteroid
 
 fun List<Asteroid>.asDatabaseModel(): Array<DatabaseAsteroid> {
