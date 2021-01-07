@@ -1,53 +1,28 @@
 package com.udacity.asteroidradar.main
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.map
+import androidx.work.WorkInfo
+import androidx.work.WorkManager
 import com.udacity.asteroidradar.data.remote.PictureOfDay
 import com.udacity.asteroidradar.data.repo.AsteroidsRepository
 import com.udacity.asteroidradar.domain.Asteroid
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
+import com.udacity.asteroidradar.worker.FeedWorker
 
 class MainViewModel(private val repo: AsteroidsRepository) : ViewModel() {
 
-    private val _loading = MutableLiveData(false)
-    val loading: LiveData<Boolean>
-        get() = _loading
-
-    private val _pictureOfDay = MutableLiveData<PictureOfDay?>()
-    val pictureOfDay: LiveData<PictureOfDay?>
-        get() = _pictureOfDay
+    val pictureOfDay: LiveData<PictureOfDay?> = repo.pictureOfDay
 
     val asteroids: LiveData<List<Asteroid>> = repo.asteroids
 
-    init {
-        refreshDataFromNetwork()
-    }
+    private val workInfoLiveData: LiveData<MutableList<WorkInfo>> = WorkManager.getInstance()
+        .getWorkInfosByTagLiveData(FeedWorker.WORK_NAME)
 
-    private fun refreshDataFromNetwork() {
-        refreshPictureOfDay()
-        refreshAsteroids()
-    }
-
-    private fun refreshAsteroids() {
-        viewModelScope.launch {
-            _loading.value = true
-            try {
-                val io = Dispatchers.IO
-                withContext(context = io) {
-                    repo.fetchAndSaveAsteroids()
-                }
-            } finally {
-                _loading.value = false
-            }
-        }
-    }
-    private fun refreshPictureOfDay() {
-        viewModelScope.launch {
-            _pictureOfDay.value = withContext(context = Dispatchers.IO) {
-                repo.getPictureOfDay()
-            }
-        }
+    val loading = workInfoLiveData.map { workInfoList ->
+        val workInfo = workInfoList.firstOrNull()
+        workInfo?.state == WorkInfo.State.RUNNING
     }
 
     class Factory(private val repo: AsteroidsRepository): ViewModelProvider.Factory {

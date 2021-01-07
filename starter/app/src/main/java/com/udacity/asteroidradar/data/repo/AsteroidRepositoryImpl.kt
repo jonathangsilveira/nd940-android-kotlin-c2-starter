@@ -29,8 +29,8 @@ class AsteroidRepositoryImpl(
     private fun save(asteroids: List<Asteroid>) {
         database.runInTransaction {
             database.asteroidDao.run {
-                deleteAll()
-                insertAll(*asteroids.asDatabaseModel())
+                deleteAsteroids()
+                insertAsteroids(*asteroids.asDatabaseModel())
             }
         }
     }
@@ -59,7 +59,25 @@ class AsteroidRepositoryImpl(
         it.asDomainModel()
     }
 
-    override suspend fun getPictureOfDay(): PictureOfDay {
+    override suspend fun fetchAndSavePictureOfDay() {
+        val domain = fetchPictureOfDay()
+        save(domain)
+    }
+
+    override val pictureOfDay: LiveData<PictureOfDay?> =
+        database.asteroidDao.getPictureOfDay().map { it?.asDomainModel }
+
+    private fun save(domain: PictureOfDay) {
+        val model = domain.asDatabaseModel
+        database.runInTransaction {
+            database.asteroidDao.run {
+                deletePictureOfDay()
+                insertPictureOfDay(model)
+            }
+        }
+    }
+
+    private suspend fun fetchPictureOfDay(): PictureOfDay {
         val json = webService.getImageOfTheDay(apiKey = BuildConfig.API_KEY)
         return parsePictureOfDayJsonResult(json)
     }

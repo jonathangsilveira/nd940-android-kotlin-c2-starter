@@ -16,5 +16,9 @@
         <item name="android:padding">@dimen/image_title_padding</item>
         <item name="android:textAppearance">@style/TextAppearance.AsteroidRadar.ImageTitle</item>
     </style>
+    <style name="Widget.AsteroidRadar.TextView.Value">
+        <item name="android:layout_marginTop">@dimen/value_margin</item>
+        <item name="android:textAppearance">@style/TextAppearance.AsteroidRadar.Subtitle</item>
+    </style>
 
 </resources>

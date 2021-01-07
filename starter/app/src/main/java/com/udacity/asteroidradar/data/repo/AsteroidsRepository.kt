@@ -7,5 +7,6 @@ import com.udacity.asteroidradar.domain.Asteroid
 interface AsteroidsRepository {
     suspend fun fetchAndSaveAsteroids()
     val asteroids: LiveData<List<Asteroid>>
-    suspend fun getPictureOfDay(): PictureOfDay
+    suspend fun fetchAndSavePictureOfDay()
+    val pictureOfDay: LiveData<PictureOfDay?>
 }

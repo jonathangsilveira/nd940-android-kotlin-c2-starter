@@ -1,6 +1,8 @@
 package com.udacity.asteroidradar.domain
 
 import com.udacity.asteroidradar.data.local.DatabaseAsteroid
+import com.udacity.asteroidradar.data.local.DatabasePictureOfDay
+import com.udacity.asteroidradar.data.remote.PictureOfDay
 
 fun List<Asteroid>.asDatabaseModel(): Array<DatabaseAsteroid> {
     return this.map {
@@ -31,3 +33,17 @@ fun List<DatabaseAsteroid>.asDomainModel(): List<Asteroid> {
         )
     }
 }
+
+val DatabasePictureOfDay.asDomainModel: PictureOfDay
+    get() = PictureOfDay(
+        url = this.url,
+        mediaType = this.mediaType,
+        title = this.title
+    )
+
+val PictureOfDay.asDatabaseModel: DatabasePictureOfDay
+    get() = DatabasePictureOfDay(
+        url = this.url,
+        mediaType = this.mediaType,
+        title = this.title
+    )

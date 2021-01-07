@@ -6,13 +6,13 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 
 @Database(
-    entities = [DatabaseAsteroid::class],
+    entities = [DatabaseAsteroid::class, DatabasePictureOfDay::class],
     version = 1,
     exportSchema = false
 )
 abstract class AsteroidRadarDatabase: RoomDatabase() {
 
-    abstract val asteroidDao: AsteroidDao
+    abstract val asteroidDao: AsteroidRadarDao
 
     companion object {
 
