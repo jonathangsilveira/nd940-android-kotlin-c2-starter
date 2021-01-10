@@ -8,7 +8,6 @@ import com.udacity.asteroidradar.data.local.AsteroidRadarDatabase
 import com.udacity.asteroidradar.data.remote.PictureOfDay
 import com.udacity.asteroidradar.data.remote.WebService
 import com.udacity.asteroidradar.data.remote.parseAsteroidsJsonResult
-import com.udacity.asteroidradar.data.remote.parsePictureOfDayJsonResult
 import com.udacity.asteroidradar.domain.Asteroid
 import com.udacity.asteroidradar.domain.asDatabaseModel
 import com.udacity.asteroidradar.domain.asDomainModel
@@ -95,8 +94,7 @@ class AsteroidRepositoryImpl(
     }
 
     private suspend fun fetchPictureOfDay(): PictureOfDay {
-        val json = webService.getImageOfTheDay(apiKey = BuildConfig.API_KEY)
-        return parsePictureOfDayJsonResult(json)
+        return webService.getImageOfTheDay(apiKey = BuildConfig.API_KEY)
     }
 
 }

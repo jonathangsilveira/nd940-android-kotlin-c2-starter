@@ -1,14 +1,20 @@
 package com.udacity.asteroidradar.data.remote
 
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import com.udacity.asteroidradar.Constants
 import com.udacity.asteroidradar.domain.Asteroid
 import okhttp3.OkHttpClient
+import okhttp3.ResponseBody
 import org.json.JSONObject
+import retrofit2.Converter
 import retrofit2.Retrofit
+import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.create
 import retrofit2.http.GET
 import retrofit2.http.Query
+import java.lang.reflect.Type
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
@@ -81,7 +87,7 @@ object Network {
 
     private val retrofit = Retrofit.Builder()
         .baseUrl(Constants.BASE_URL)
-        .addConverterFactory(ScalarsConverterFactory.create())
+        .addConverterFactory(ScalarsOrMoshiConverterFactory.create())
         .client(client)
         .build()
 
@@ -91,7 +97,7 @@ object Network {
 interface WebService {
 
     @GET("planetary/apod")
-    suspend fun getImageOfTheDay(@Query("api_key") apiKey: String): String
+    suspend fun getImageOfTheDay(@Query("api_key") apiKey: String): PictureOfDay
 
     @GET("neo/rest/v1/feed")
     suspend fun getFeed(
@@ -100,4 +106,44 @@ interface WebService {
         @Query("end_date") endDate: String,
     ): String
 
+}
+
+@Target(
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.PROPERTY_GETTER,
+    AnnotationTarget.PROPERTY_SETTER
+)
+@Retention
+internal annotation class StringAno
+@Target(
+    AnnotationTarget.FUNCTION,
+    AnnotationTarget.PROPERTY_GETTER,
+    AnnotationTarget.PROPERTY_SETTER
+)
+@Retention
+internal annotation class JsonAno
+
+class ScalarsOrMoshiConverterFactory: Converter.Factory() {
+    private val scalarConverterFactory = ScalarsConverterFactory.create()
+    private val moshi = Moshi.Builder().add(KotlinJsonAdapterFactory()).build()
+
+    override fun responseBodyConverter(
+        type: Type,
+        annotations: Array<Annotation>,
+        retrofit: Retrofit
+    ): Converter<ResponseBody, *>? {
+        annotations.forEach { annotation ->
+            return when (annotation) {
+                is StringAno -> scalarConverterFactory
+                    .responseBodyConverter(type, annotations, retrofit)
+                is JsonAno -> MoshiConverterFactory.create(moshi)
+                    .responseBodyConverter(type, annotations, retrofit)
+                else -> null
+            }
+        }
+        return null
+    }
+    companion object {
+        fun create() = ScalarsOrMoshiConverterFactory()
+    }
 }
