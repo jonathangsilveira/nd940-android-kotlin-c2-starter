@@ -6,7 +6,10 @@ import com.udacity.asteroidradar.domain.Asteroid
 
 interface AsteroidsRepository {
     suspend fun fetchAndSaveAsteroids()
-    val asteroids: LiveData<List<Asteroid>>
+    fun getAsteroids(filter: Filters): LiveData<List<Asteroid>>
     suspend fun fetchAndSavePictureOfDay()
     val pictureOfDay: LiveData<PictureOfDay?>
+    enum class Filters {
+        DAY, WEEK, ALL
+    }
 }

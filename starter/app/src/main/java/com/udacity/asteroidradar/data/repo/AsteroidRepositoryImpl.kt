@@ -13,6 +13,7 @@ import com.udacity.asteroidradar.domain.Asteroid
 import com.udacity.asteroidradar.domain.asDatabaseModel
 import com.udacity.asteroidradar.domain.asDomainModel
 import org.json.JSONObject
+import java.text.DateFormat
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -55,8 +56,24 @@ class AsteroidRepositoryImpl(
             return dateFormat.format(calendar.time) to endDate
         }
 
-    override val asteroids: LiveData<List<Asteroid>> = database.asteroidDao.getAsteroids().map {
-        it.asDomainModel()
+    override fun getAsteroids(filter: AsteroidsRepository.Filters): LiveData<List<Asteroid>> {
+        val calendar = Calendar.getInstance()
+        val dateFormat: DateFormat =
+            SimpleDateFormat(Constants.API_QUERY_DATE_FORMAT, Locale.getDefault())
+        val asteroids = when (filter) {
+            AsteroidsRepository.Filters.DAY -> {
+                val date = dateFormat.format(calendar.time)
+                database.asteroidDao.getAsteroids(date)
+            }
+            AsteroidsRepository.Filters.WEEK -> {
+                val startDate = dateFormat.format(calendar.time)
+                calendar.add(Calendar.DAY_OF_YEAR, 7)
+                val endDate = dateFormat.format(calendar.time)
+                database.asteroidDao.getAsteroids(startDate, endDate)
+            }
+            AsteroidsRepository.Filters.ALL -> database.asteroidDao.getAllAsteroids()
+        }
+        return asteroids.map { it.asDomainModel() }
     }
 
     override suspend fun fetchAndSavePictureOfDay() {

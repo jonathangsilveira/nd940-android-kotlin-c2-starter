@@ -47,6 +47,11 @@ class MainFragment : Fragment() {
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.show_all_menu -> viewModel.filterByWeek()
+            R.id.show_rent_menu -> viewModel.filterByDay()
+            else -> viewModel.showAll()
+        }
         return true
     }
 
