@@ -8,56 +8,50 @@
         <variable
             name="asteroid"
             type="com.udacity.asteroidradar.domain.Asteroid" />
+
     </data>
 
-    <androidx.constraintlayout.widget.ConstraintLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@color/app_background">
 
-        <ImageView
-            android:id="@+id/activity_main_image_of_the_day"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:adjustViewBounds="true"
-            app:asteroidStatusImage="@{asteroid.potentiallyHazardous}"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            tools:srcCompat="@drawable/asteroid_safe" />
+            android:orientation="vertical">
 
-        <ScrollView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:padding="16dp"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/activity_main_image_of_the_day">
+            <ImageView
+                android:id="@+id/activity_main_image_of_the_day"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:adjustViewBounds="true"
+                android:contentDescription="@string/not_hazardous_asteroid_image"
+                app:asteroidStatusImage="@{asteroid.potentiallyHazardous}"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                tools:srcCompat="@drawable/asteroid_safe" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:padding="16dp"
                 android:orientation="vertical">
 
-                <LinearLayout
+                <TextView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">
+                    android:text="@string/close_approach_data_title"
+                    android:textAppearance="@style/TextAppearance.AsteroidRadar.Headline" />
 
-                    <TextView
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@string/close_approach_data_title"
-                        android:textAppearance="@style/TextAppearance.AsteroidRadar.Headline" />
-
-                    <TextView
-                        android:id="@+id/close_approach_date"
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:text="@{asteroid.closeApproachDate}"
-                        style="@style/Widget.AsteroidRadar.TextView.Value"
-                        tools:text="2020-02-01" />
-                </LinearLayout>
+                <TextView
+                    android:id="@+id/close_approach_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="@{asteroid.closeApproachDate}"
+                    style="@style/Widget.AsteroidRadar.TextView.Value"
+                    tools:text="2020-02-01" />
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -143,7 +137,9 @@
                     tools:text="0.0924 au" />
 
             </LinearLayout>
-        </ScrollView>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+        </LinearLayout>
+
+    </ScrollView>
+
 </layout>
