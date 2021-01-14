@@ -45,7 +45,7 @@ class AsteroidRadarApp: Application() {
                 .build()
         WorkManager.getInstance().enqueueUniquePeriodicWork(
             FeedWorker.WORK_NAME,
-            ExistingPeriodicWorkPolicy.REPLACE,
+            ExistingPeriodicWorkPolicy.KEEP,
             repeatingRequest
         )
     }
@@ -57,7 +57,7 @@ class AsteroidRadarApp: Application() {
                 .build()
         WorkManager.getInstance().enqueueUniquePeriodicWork(
             PictureOfDayWorker.WORK_NAME,
-            ExistingPeriodicWorkPolicy.REPLACE,
+            ExistingPeriodicWorkPolicy.KEEP,
             repeatingRequest
         )
     }
