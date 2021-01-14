@@ -1,7 +1,6 @@
 package com.udacity.asteroidradar
 
 import android.app.Application
-import android.os.Build
 import androidx.work.*
 import com.udacity.asteroidradar.worker.FeedWorker
 import com.udacity.asteroidradar.worker.PictureOfDayWorker
@@ -24,14 +23,13 @@ class AsteroidRadarApp: Application() {
     }
 
     private fun setupRecurringWork() {
-        val constraints = Constraints.Builder()
+        val builder = Constraints.Builder()
             .setRequiredNetworkType(NetworkType.CONNECTED)
             .setRequiresCharging(true)
-            .apply {
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    setRequiresDeviceIdle(true)
-                }
-            }.build()
+        // This code snippet is used in DevBytes sample app but for this one it doesn't work :(
+        /*if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            builder.setRequiresDeviceIdle(true)*/
+        val constraints = builder.build()
 
         schedulePictureWorker(constraints)
         scheduleFeedWorker(constraints)
