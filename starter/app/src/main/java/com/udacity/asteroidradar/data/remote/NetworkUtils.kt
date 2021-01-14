@@ -55,14 +55,6 @@ fun parseAsteroidsJsonResult(jsonResult: JSONObject): ArrayList<Asteroid> {
     return asteroidList
 }
 
-fun parsePictureOfDayJsonResult(json: String): PictureOfDay {
-    val rootJson = JSONObject(json)
-    val mediaType = rootJson.getString("media_type")
-    val title = rootJson.getString("title")
-    val url = rootJson.getString("url")
-    return PictureOfDay(mediaType, title, url)
-}
-
 private fun getNextSevenDaysFormattedDates(): ArrayList<String> {
     val formattedDateList = ArrayList<String>()
 
@@ -149,4 +141,5 @@ class ScalarsOrMoshiConverterFactory: Converter.Factory() {
     companion object {
         fun create() = ScalarsOrMoshiConverterFactory()
     }
+
 }
