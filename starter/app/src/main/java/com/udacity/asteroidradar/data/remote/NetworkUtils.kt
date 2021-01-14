@@ -97,9 +97,11 @@ object Network {
 interface WebService {
 
     @GET("planetary/apod")
+    @JsonResponse
     suspend fun getImageOfTheDay(@Query("api_key") apiKey: String): PictureOfDay
 
     @GET("neo/rest/v1/feed")
+    @StringResponse
     suspend fun getFeed(
         @Query("api_key") apiKey: String,
         @Query("start_date") startDate: String,
@@ -114,14 +116,15 @@ interface WebService {
     AnnotationTarget.PROPERTY_SETTER
 )
 @Retention
-internal annotation class StringAno
+internal annotation class StringResponse
+
 @Target(
     AnnotationTarget.FUNCTION,
     AnnotationTarget.PROPERTY_GETTER,
     AnnotationTarget.PROPERTY_SETTER
 )
 @Retention
-internal annotation class JsonAno
+internal annotation class JsonResponse
 
 class ScalarsOrMoshiConverterFactory: Converter.Factory() {
     private val scalarConverterFactory = ScalarsConverterFactory.create()
@@ -134,9 +137,9 @@ class ScalarsOrMoshiConverterFactory: Converter.Factory() {
     ): Converter<ResponseBody, *>? {
         annotations.forEach { annotation ->
             return when (annotation) {
-                is StringAno -> scalarConverterFactory
+                is StringResponse -> scalarConverterFactory
                     .responseBodyConverter(type, annotations, retrofit)
-                is JsonAno -> MoshiConverterFactory.create(moshi)
+                is JsonResponse -> MoshiConverterFactory.create(moshi)
                     .responseBodyConverter(type, annotations, retrofit)
                 else -> null
             }
