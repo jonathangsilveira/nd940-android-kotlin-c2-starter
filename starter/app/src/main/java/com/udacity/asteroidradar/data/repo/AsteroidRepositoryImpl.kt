@@ -22,20 +22,15 @@ class AsteroidRepositoryImpl(
 ): AsteroidsRepository {
 
     override suspend fun fetchAndSaveAsteroids() {
-        val asteroids = fetch()
+        val asteroids = fetchAsteroids()
         save(asteroids)
     }
 
     private fun save(asteroids: List<Asteroid>) {
-        database.runInTransaction {
-            database.asteroidDao.run {
-                deleteAsteroids()
-                insertAsteroids(*asteroids.asDatabaseModel())
-            }
-        }
+        database.asteroidDao.refreshAsteroids(*asteroids.asDatabaseModel())
     }
 
-    private suspend fun fetch(): List<Asteroid> {
+    private suspend fun fetchAsteroids(): List<Asteroid> {
         val (startDate, endDate) = dateRange
         val feed = webService.getFeed(
             apiKey = BuildConfig.API_KEY,
@@ -85,12 +80,7 @@ class AsteroidRepositoryImpl(
 
     private fun save(domain: PictureOfDay) {
         val model = domain.asDatabaseModel
-        database.runInTransaction {
-            database.asteroidDao.run {
-                deletePictureOfDay()
-                insertPictureOfDay(model)
-            }
-        }
+        database.asteroidDao.refreshPictureOfDay(model)
     }
 
     private suspend fun fetchPictureOfDay(): PictureOfDay {

@@ -1,10 +1,7 @@
 package com.udacity.asteroidradar.data.local
 
 import androidx.lifecycle.LiveData
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 
 @Dao
 interface AsteroidRadarDao {
@@ -24,4 +21,14 @@ interface AsteroidRadarDao {
     fun insertPictureOfDay(picture: DatabasePictureOfDay)
     @Query(value = "DELETE FROM picture_of_day")
     fun deletePictureOfDay()
+    @Transaction
+    fun refreshAsteroids(vararg videos: DatabaseAsteroid) {
+        deleteAsteroids()
+        insertAsteroids(*videos)
+    }
+    @Transaction
+    fun refreshPictureOfDay(picture: DatabasePictureOfDay) {
+        deletePictureOfDay()
+        insertPictureOfDay(picture)
+    }
 }
